@@ -1,8 +1,6 @@
 package com.sjodin.thesis.analysis;
 
 import com.sjodin.thesis.components.ConditionWithDistance;
-import com.company.Expressions.*;
-import com.company.Statements.*;
 import com.sjodin.thesis.components.DualNumber;
 import com.sjodin.thesis.expressions.*;
 import com.sjodin.thesis.statements.AssignmentStatement;

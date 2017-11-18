@@ -8,11 +8,13 @@ import com.sjodin.thesis.components.DualNumber;
 import java.util.Arrays;
 import java.util.function.Function;
 
-// actual gradient descent (the inner gradient descent of our algorithm)
-// not using GradientDescent interface as relies on smoothing functions
+// Actual gradient descent (the inner gradient descent of our algorithm).
+// Not using GradientDescent interface as relies on smoothing functions
 public class GradientDescentWithSmoothing {
 
-    private static final double gammaCooldown = 0.65;
+    private static final double GAMMA_COOLDOWN = 0.65;
+    private static final int MAXIMUM_JUMP_DISTANCE = 5;
+
     private StatementTree program;
     private int parameters;
 
@@ -22,69 +24,13 @@ public class GradientDescentWithSmoothing {
         this.parameters = parameters;
     }
 
-    // used for necessary vector arithmetic
+    // Used for necessary vector arithmetic
     private double amountOfChange(Double[] oldVector, Double[] newVector) {
         double sum = 0;
         for (int i = 0; i < parameters; i++) {
             sum += Math.abs(newVector[i] - oldVector[i]);
         }
         return sum;
-    }
-
-    // common logic for maximum and minimum (with boolean to differentiate between the two)
-    private Double[] findOptimum(double precision, double gamma, Function<BranchValues, Double> smoother,
-                                 Function<BranchValues, Double> equalitySmoother, Double smoothingRange, Double[] startPoint, boolean maximise) {
-        Double[] oldVector = new Double[parameters]; // don't fail on first loop
-        Arrays.fill(oldVector, startPoint[0] - 5);
-        // not strictly necessary but more explicitly shows use
-        Double[] newVector = startPoint;
-        // Need effective gamma for separate parameters.
-        // Could have minima/maxima in very different places
-        Double[] effectiveGamma = new Double[parameters];
-        Arrays.fill(effectiveGamma, gamma);
-        Boolean[] direction = new Boolean[parameters];
-        Arrays.fill(direction, true);
-
-        while (amountOfChange(oldVector, newVector) > precision) {
-            // use last value for each parameter
-            System.arraycopy(newVector, 0, oldVector, 0, parameters);
-            // have to update for each parameter
-            for (int i = 0; i < parameters; i++) {
-                // state is all the parameters we have at this point, with this one as the one we differentiate
-                State<DualNumber> state = new State<DualNumber>();
-                for (int j = 0; j < parameters; j++) {
-                    state.put(j, new DualNumber(oldVector[j], 0.0));
-                }
-                state.put(i, new DualNumber(oldVector[i], 1.0));
-
-                // now perform the actual change for this parameter
-                double change = (effectiveGamma[i] * program.run(state, smoother, equalitySmoother, smoothingRange).first.get().getEpsilonCoefficient());
-
-                //interpolation leads to very high gradients over tiny ranges, so limit jumps
-                if (change > 0) {
-                    change = Math.min(change, 5*effectiveGamma[i]);
-                } else {
-                    change = Math.max(change, -5*effectiveGamma[i]);
-                }
-
-                // reduce step size when changing direction, to deal with sharp optima
-                if (change > 0 && direction[i]) {
-                    direction[i] = false;
-                    effectiveGamma[i] *= gammaCooldown;
-                } else if (change < 0 && !direction[i]) {
-                    direction[i] = true;
-                    effectiveGamma[i] *= gammaCooldown;
-                }
-
-                // direction based on which kind of optimisation
-                if (maximise) {
-                    newVector[i] = oldVector[i] + change;
-                } else {
-                    newVector[i] = oldVector[i] - change;
-                }
-            }
-        }
-        return newVector;
     }
 
     public Double[] findMinimum(double precision, double gamma, Function<BranchValues, Double> smoother,
@@ -95,5 +41,73 @@ public class GradientDescentWithSmoothing {
     public Double[] findMaximum(double precision, double gamma, Function<BranchValues, Double> smoother,
                                 Function<BranchValues, Double> equalitySmoother, Double smoothingRange, Double[] startPoint) {
         return findOptimum(precision, gamma, smoother, equalitySmoother, smoothingRange, startPoint, true);
+    }
+
+    // Common logic for maximum and minimum (with boolean to differentiate between the two)
+    private Double[] findOptimum(double precision, double gamma, Function<BranchValues, Double> smoother,
+                                 Function<BranchValues, Double> equalitySmoother, Double smoothingRange, Double[] startPoint, boolean maximise) {
+        Double[] oldVector = new Double[parameters]; // don't fail on first loop
+
+        // pretend there's some changes happening so we don't assume we've already found an optimum
+        Arrays.fill(oldVector, startPoint[0] - 5);
+        Double[] newVector = startPoint;
+
+        // Need effective gamma for separate parameters.
+        // Could have minima/maxima in very different places
+        Double[] effectiveGamma = new Double[parameters];
+        Arrays.fill(effectiveGamma, gamma);
+
+        Boolean[] direction = new Boolean[parameters];
+        Arrays.fill(direction, true);
+
+        while (amountOfChange(oldVector, newVector) > precision) {
+            // Use last value for each parameter
+            System.arraycopy(newVector, 0, oldVector, 0, parameters);
+            // Have to update for each parameter
+            for (int i = 0; i < parameters; i++) {
+                // State is all the parameters we have at this point, with this one as the one we differentiate
+                State<DualNumber> state = initialiseStateToDifferentiateSpecificParameter(oldVector, i);
+
+                // Now perform the actual change for this parameter
+                double change = calculateChangeForParameter(effectiveGamma[i], state, smoother, equalitySmoother, smoothingRange);
+
+                if (shouldChangeDirection(direction[i], change)) {
+                    direction[i] = !direction[i];
+                    // Reduce step size when changing direction, to deal with sharp optima
+                    effectiveGamma[i] *= GAMMA_COOLDOWN;
+                }
+
+                // Direction based on which kind of optimisation
+                newVector[i] = maximise ? oldVector[i] + change : oldVector[i] - change;
+            }
+        }
+        return newVector;
+    }
+
+    private State<DualNumber> initialiseStateToDifferentiateSpecificParameter(Double[] oldVector, int i) {
+        State<DualNumber> state = new State<DualNumber>();
+        for (int j = 0; j < parameters; j++) {
+            state.put(j, new DualNumber(oldVector[j], 0.0));
+        }
+        state.put(i, new DualNumber(oldVector[i], 1.0));
+        return state;
+    }
+
+    private double calculateChangeForParameter(double effectiveGamma, State<DualNumber> state, Function<BranchValues, Double> smoother,
+                                               Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
+        double change = (effectiveGamma * program.run(state, smoother, equalitySmoother, smoothingRange).first.get().getEpsilonCoefficient());
+
+        // Interpolation leads to very high gradients over tiny ranges, so limit jumps
+        if (change > 0) {
+            change = Math.min(change, MAXIMUM_JUMP_DISTANCE * effectiveGamma);
+        } else {
+            change = Math.max(change, MAXIMUM_JUMP_DISTANCE * -1 * effectiveGamma);
+        }
+
+        return change;
+    }
+
+    private boolean shouldChangeDirection(boolean direction, double change) {
+        return (change > 0 && direction) || (change < 0 && !direction);
     }
 }
