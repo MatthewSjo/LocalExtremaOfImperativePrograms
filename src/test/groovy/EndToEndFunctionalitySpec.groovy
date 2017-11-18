@@ -39,7 +39,7 @@ class EndToEndFunctionalitySpec extends Specification {
 
         // detect any failures
         for (int i = 0; i < results.length; i++) {
-            assert Math.abs(results[i] - test.getExpectedAnswer()[i]) > precision
+            assert Math.abs(results[i] - test.getExpectedAnswer()[i]) <= precision
         }
     }
 
