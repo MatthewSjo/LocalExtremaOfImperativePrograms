@@ -66,8 +66,8 @@ public final class TestingSuite {
         return failures.size() == 0;
     }
 
-    // return average runs and number of failures for some arbitrary tests
-    private static Tuple2<Integer, Integer> AdvancedTest(List<OptimisationTest> programsToTest, GradientDescent<Double[]> algorithmVariant,
+    // return number of failures
+    private static int AdvancedTest(List<OptimisationTest> programsToTest, GradientDescent<Double[]> algorithmVariant,
                                                   double precision, double startingPoint) {
         int totalRuns = 0;
         List<Tuple2<String, Double[]>> failures = new ArrayList<>();
@@ -93,8 +93,10 @@ public final class TestingSuite {
             totalRuns += tracker.TimesRun();
         }
 
-        // return average runs and number of failures
-        return new Tuple2<>((totalRuns/programsToTest.size()), failures.size());
+
+        System.out.println("Average runs:  " + (totalRuns/programsToTest.size()));
+        System.out.println("Failures:  " + failures.size());
+        return failures.size();
     }
 
     // tests how many runs are required for a variety of precisions
@@ -102,9 +104,7 @@ public final class TestingSuite {
         GradientDescentWithAnnealing algorithm = new GradientDescentWithAnnealing(null, 0, gamma, new Double[]{}, range, coolingSpeed);
         for (int i = 0; i < precision.length; i++) {
             System.out.println("Test precision " + precision[i]);
-            Tuple2<Integer, Integer> results = AdvancedTest(programsToTest, algorithm, precision[i], startingPoint);
-            System.out.println("Average runs:  " + results.first);
-            System.out.println("Failures:  " + results.second);
+            AdvancedTest(programsToTest, algorithm, precision[i], startingPoint);
         }
     }
 
@@ -114,9 +114,7 @@ public final class TestingSuite {
             for (double startPoint : startingPoint) {
                 System.out.println("range = " + range + ", starting point = " + startPoint);
                 GradientDescentWithAnnealing algorithm = new GradientDescentWithAnnealing(null, 0, gamma, new Double[]{}, range, coolingSpeed);
-                Tuple2<Integer, Integer> results = AdvancedTest(programsToTest, algorithm, precision, startPoint);
-                System.out.println("Average runs:  " + results.first);
-                System.out.println("Failures:  " + results.second);
+                AdvancedTest(programsToTest, algorithm, precision, startPoint);
             }
         }
     }
@@ -126,9 +124,7 @@ public final class TestingSuite {
         for (double startPoint : startingPoint) {
             System.out.println("starting point = " + startPoint);
             VariantInstantFullPrecision algorithm = new VariantInstantFullPrecision(null, 0, gamma, new Double[]{});
-            Tuple2<Integer, Integer> results = AdvancedTest(programsToTest, algorithm, precision, startPoint);
-            System.out.println("Average runs:  " + results.first);
-            System.out.println("Failures:  " + results.second);
+            AdvancedTest(programsToTest, algorithm, precision, startPoint);
         }
     }
 
@@ -137,9 +133,7 @@ public final class TestingSuite {
         VariantInnerPrecision algorithm = new VariantInnerPrecision(null, 0, gamma, new Double[]{}, range, coolingSpeed);
         for (int i = 0; i < precision.length; i++) {
             System.out.println("Test precision " + precision[i]);
-            Tuple2<Integer, Integer> results = AdvancedTest(programsToTest, algorithm, precision[i], startingPoint);
-            System.out.println("Average runs:  " + results.first);
-            System.out.println("Failures:  " + results.second);
+            AdvancedTest(programsToTest, algorithm, precision[i], startingPoint);
         }
     }
 
@@ -149,9 +143,7 @@ public final class TestingSuite {
             for (double coolingSpeed : coolingSpeeds) {
                 System.out.println("Precision:  " + precision + ", Cooling speed:  " + coolingSpeed);
                 GradientDescentWithAnnealing algorithm = new GradientDescentWithAnnealing(null, 0, gamma, new Double[]{}, range, coolingSpeed);
-                Tuple2<Integer, Integer> results = AdvancedTest(programsToTest, algorithm, precision, 5);
-                System.out.println("Average runs:  " + results.first);
-                System.out.println("Failures:  " + results.second);
+                AdvancedTest(programsToTest, algorithm, precision, 5);
             }
         }
     }

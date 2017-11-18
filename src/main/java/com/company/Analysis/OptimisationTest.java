@@ -38,4 +38,8 @@ public class OptimisationTest {
     public StatementTree getStatementTree() {
         return statementTree;
     }
+
+    public String toString() {
+        return testName;
+    }
 }
