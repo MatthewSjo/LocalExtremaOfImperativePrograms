@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
         // main can be used for running the tests by which we analyse the implementation
         // see the "TestingSuite" class to find more examples of tests to be run
-        List<OptimisationTest> testPrograms = new TestPrograms().testPrograms();
+        List<OptimisationTest> testPrograms = TestPrograms.testPrograms();
 
         // this runs the normal version of the algorithm on 29 standard testing programs at a number of precisions,
         // with a starting point of 5 (increase to start further from local maxima and minima)

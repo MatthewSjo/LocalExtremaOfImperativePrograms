@@ -16,11 +16,8 @@ public class VariantInnerPrecision implements GradientDescent<Double[]> {
     private double coolingSpeed;
 
     // "gamma" is our step size
-    public VariantInnerPrecision(StatementTree program, int parameters, double gamma, Double[] startPoint, double range, double coolingSpeed) {
-        this.program = program;
-        this.parameters = parameters;
+    public VariantInnerPrecision(double gamma, double range, double coolingSpeed) {
         this.gamma = gamma;
-        this.startPoint = startPoint;
         this.range = range;
         this.coolingSpeed = coolingSpeed;
     }

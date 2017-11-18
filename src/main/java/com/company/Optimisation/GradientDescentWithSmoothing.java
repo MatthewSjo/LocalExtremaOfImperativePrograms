@@ -47,9 +47,7 @@ public class GradientDescentWithSmoothing {
 
         while (amountOfChange(oldVector, newVector) > precision) {
             // use last value for each parameter
-            for (int i = 0; i < parameters; i++) {
-                oldVector[i] = newVector[i];
-            }
+            System.arraycopy(newVector, 0, oldVector, 0, parameters);
             // have to update for each parameter
             for (int i = 0; i < parameters; i++) {
                 // state is all the parameters we have at this point, with this one as the one we differentiate
@@ -58,14 +56,17 @@ public class GradientDescentWithSmoothing {
                     state.put(j, new DualNumber(oldVector[j], 0.0));
                 }
                 state.put(i, new DualNumber(oldVector[i], 1.0));
+
                 // now perform the actual change for this parameter
                 double change = (effectiveGamma[i] * program.run(state, smoother, equalitySmoother, smoothingRange).first.get().getEpsilonCoefficient());
+
                 //interpolation leads to very high gradients over tiny ranges, so limit jumps
                 if (change > 0) {
                     change = Math.min(change, 5*effectiveGamma[i]);
                 } else {
                     change = Math.max(change, -5*effectiveGamma[i]);
                 }
+
                 // reduce step size when changing direction, to deal with sharp optima
                 if (change > 0 && direction[i]) {
                     direction[i] = false;
@@ -74,6 +75,7 @@ public class GradientDescentWithSmoothing {
                     direction[i] = true;
                     effectiveGamma[i] *= gammaCooldown;
                 }
+
                 // direction based on which kind of optimisation
                 if (maximise) {
                     newVector[i] = oldVector[i] + change;
