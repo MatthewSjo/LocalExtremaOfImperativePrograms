@@ -11,7 +11,7 @@ import java.util.*;
 public class TestPrograms {
 
     // default list of programs to test
-    public List<OptimisationTest> testPrograms() {
+    public static List<OptimisationTest> testPrograms() {
         List<OptimisationTest> testingStatements = new ArrayList<>();
 
         // start with extremely simple examples of maximisation and minimisation

@@ -14,11 +14,8 @@ public class VariantInstantFullPrecision implements GradientDescent<Double[]> {
     private Double[] startPoint;
 
     // "gamma" is our step size
-    public VariantInstantFullPrecision(StatementTree program, int parameters, double gamma, Double[] startPoint) {
-        this.program = program;
-        this.parameters = parameters;
+    public VariantInstantFullPrecision(double gamma) {
         this.gamma = gamma;
-        this.startPoint = startPoint;
     }
 
     private Double smoother(BranchValues branchValues, double expAdjust, double smoothingRange) {
