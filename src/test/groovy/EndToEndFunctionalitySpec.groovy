@@ -1,10 +1,10 @@
-import com.company.Analysis.OptimisationTest
-import com.company.Analysis.TestPrograms
-import com.company.Analysis.VariantInnerPrecision
-import com.company.Analysis.VariantInstantFullPrecision
-import com.company.Optimisation.GradientDescent
-import com.company.Optimisation.GradientDescentWithAnnealing
-import com.company.Statements.ProgramTracker
+import com.sjodin.thesis.analysis.OptimisationTest
+import com.sjodin.thesis.analysis.TestPrograms
+import com.sjodin.thesis.analysis.VariantInnerPrecision
+import com.sjodin.thesis.analysis.VariantInstantFullPrecision
+import com.sjodin.thesis.optimisation.GradientDescent
+import com.sjodin.thesis.optimisation.GradientDescentWithAnnealing
+import com.sjodin.thesis.statements.ProgramTracker
 import spock.lang.Shared
 import spock.lang.Specification
 
