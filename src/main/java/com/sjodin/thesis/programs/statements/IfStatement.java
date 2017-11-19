@@ -1,6 +1,9 @@
-package com.sjodin.thesis.statements;
+package com.sjodin.thesis.programs.statements;
 
 import com.sjodin.thesis.components.*;
+import com.sjodin.thesis.programs.ImperativeProgramState;
+import com.sjodin.thesis.programs.StatementResult;
+import com.sjodin.thesis.programs.StatementTree;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -22,8 +25,8 @@ public class IfStatement implements StatementTree {
     }
 
     // first one corresponds to "true" branch; smooths values between states
-    private State<DualNumber> spliceStatesWithSmoothing(State<DualNumber> x, State<DualNumber> y, double proportion) {
-        State<DualNumber> state = new State<DualNumber>();
+    private ImperativeProgramState<DualNumber> spliceStatesWithSmoothing(ImperativeProgramState<DualNumber> x, ImperativeProgramState<DualNumber> y, double proportion) {
+        ImperativeProgramState<DualNumber> state = new ImperativeProgramState<DualNumber>();
         for (Map.Entry<Integer, DualNumber> entry : x.getAll()) {
             if (y.contains(entry.getKey())) {
                 state.put(entry.getKey(), entry.getValue().spliceCoefficients(y.get(entry.getKey()), proportion));
@@ -35,14 +38,14 @@ public class IfStatement implements StatementTree {
     }
 
     @Override
-    public StatementResult run(State<DualNumber> state, Function<BranchValues, Double> smoother,
-                                                               Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
+    public StatementResult run(ImperativeProgramState<DualNumber> state, Function<BranchValues, Double> smoother,
+                               Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
         // first find which branch was taken, and find results of branch taken or not
         ConditionResult conditionResults = condition.run(state);
         boolean takeTrueBranch = conditionResults.isConditionPassed();
         double displacementFromBranchPoint = conditionResults.getHowCloseToPassing();
-        State<DualNumber> takenState = state.copy();
-        State<DualNumber> notTakenState = state.copy();
+        ImperativeProgramState<DualNumber> takenState = state.copy();
+        ImperativeProgramState<DualNumber> notTakenState = state.copy();
         StatementResult takenBranch =
                 takeTrueBranch ? trueBranch.run(takenState, smoother, equalitySmoother, smoothingRange)
                         : falseBranch.run(takenState, smoother, equalitySmoother, smoothingRange);

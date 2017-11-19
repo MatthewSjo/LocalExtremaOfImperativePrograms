@@ -1,7 +1,8 @@
-package com.sjodin.thesis.expressions;
+package com.sjodin.thesis.programs.expressions;
 
-import com.sjodin.thesis.components.State;
+import com.sjodin.thesis.programs.ImperativeProgramState;
 import com.sjodin.thesis.components.DualNumber;
+import com.sjodin.thesis.programs.ExpressionTree;
 
 // Represents division of one expression by another (immutable)
 public class DivisionExpression implements ExpressionTree {
@@ -14,7 +15,7 @@ public class DivisionExpression implements ExpressionTree {
         this.right = right;
     }
 
-    public DualNumber run(State<DualNumber> state) {
+    public DualNumber run(ImperativeProgramState<DualNumber> state) {
         return left.run(state).divide(right.run(state));
     }
 }

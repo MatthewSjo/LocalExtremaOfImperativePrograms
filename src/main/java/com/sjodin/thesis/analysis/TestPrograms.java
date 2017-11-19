@@ -2,11 +2,11 @@ package com.sjodin.thesis.analysis;
 
 import com.sjodin.thesis.components.ConditionWithDistance;
 import com.sjodin.thesis.components.DualNumber;
-import com.sjodin.thesis.expressions.*;
-import com.sjodin.thesis.statements.AssignmentStatement;
-import com.sjodin.thesis.statements.EndStatement;
-import com.sjodin.thesis.statements.IfStatement;
-import com.sjodin.thesis.statements.ReturnStatement;
+import com.sjodin.thesis.programs.expressions.*;
+import com.sjodin.thesis.programs.statements.AssignmentStatement;
+import com.sjodin.thesis.programs.statements.EndStatement;
+import com.sjodin.thesis.programs.statements.IfStatement;
+import com.sjodin.thesis.programs.statements.ReturnStatement;
 
 import java.util.*;
 

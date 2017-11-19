@@ -1,8 +1,8 @@
-package com.sjodin.thesis.optimisation;
+package com.sjodin.thesis.algorithm;
 
 import com.sjodin.thesis.components.BranchValues;
-import com.sjodin.thesis.components.State;
-import com.sjodin.thesis.statements.StatementTree;
+import com.sjodin.thesis.programs.ImperativeProgramState;
+import com.sjodin.thesis.programs.StatementTree;
 import com.sjodin.thesis.components.DualNumber;
 
 import java.util.Arrays;
@@ -66,7 +66,7 @@ public class GradientDescentWithSmoothing {
             // Have to update for each parameter
             for (int i = 0; i < parameters; i++) {
                 // State is all the parameters we have at this point, with this one as the one we differentiate
-                State<DualNumber> state = initialiseStateToDifferentiateSpecificParameter(oldVector, i);
+                ImperativeProgramState<DualNumber> state = initialiseStateToDifferentiateSpecificParameter(oldVector, i);
 
                 // Now perform the actual change for this parameter
                 double change = calculateChangeForParameter(effectiveGamma[i], state, smoother, equalitySmoother, smoothingRange);
@@ -84,8 +84,8 @@ public class GradientDescentWithSmoothing {
         return newVector;
     }
 
-    private State<DualNumber> initialiseStateToDifferentiateSpecificParameter(Double[] oldVector, int i) {
-        State<DualNumber> state = new State<DualNumber>();
+    private ImperativeProgramState<DualNumber> initialiseStateToDifferentiateSpecificParameter(Double[] oldVector, int i) {
+        ImperativeProgramState<DualNumber> state = new ImperativeProgramState<DualNumber>();
         for (int j = 0; j < parameters; j++) {
             state.put(j, new DualNumber(oldVector[j], 0.0));
         }
@@ -93,7 +93,7 @@ public class GradientDescentWithSmoothing {
         return state;
     }
 
-    private double calculateChangeForParameter(double effectiveGamma, State<DualNumber> state, Function<BranchValues, Double> smoother,
+    private double calculateChangeForParameter(double effectiveGamma, ImperativeProgramState<DualNumber> state, Function<BranchValues, Double> smoother,
                                                Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
         double change = (effectiveGamma * program.run(state, smoother, equalitySmoother, smoothingRange).getResultValue().getEpsilonCoefficient());
 

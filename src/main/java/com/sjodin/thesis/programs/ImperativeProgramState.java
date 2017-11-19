@@ -1,11 +1,11 @@
-package com.sjodin.thesis.components;
+package com.sjodin.thesis.programs;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 // The state of the program - the values of variables.  Indexed via integers
-public class State<T> {
+public class ImperativeProgramState<T> {
 
     @Override
     public String toString() {
@@ -27,8 +27,8 @@ public class State<T> {
     }
 
     // returns a deep copy
-    public State<T> copy() {
-        State<T> state = new State<T>();
+    public ImperativeProgramState<T> copy() {
+        ImperativeProgramState<T> state = new ImperativeProgramState<T>();
         for (Map.Entry<Integer, T> entry : getAll()) {
                 state.put(entry.getKey(), entry.getValue());
         }

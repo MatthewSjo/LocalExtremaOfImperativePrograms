@@ -1,8 +1,10 @@
-package com.sjodin.thesis.statements;
+package com.sjodin.thesis.programs.statements;
 
 import com.sjodin.thesis.components.*;
+import com.sjodin.thesis.programs.ImperativeProgramState;
+import com.sjodin.thesis.programs.StatementResult;
+import com.sjodin.thesis.programs.StatementTree;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 // sneakily tracks stats about program use via delegation
@@ -21,7 +23,7 @@ public class ProgramTracker implements StatementTree {
     }
 
     @Override
-    public StatementResult run(State<DualNumber> state, Function<BranchValues, Double> smoother,
+    public StatementResult run(ImperativeProgramState<DualNumber> state, Function<BranchValues, Double> smoother,
                                Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
         runTimes++;
         return program.run(state, smoother, equalitySmoother, smoothingRange);

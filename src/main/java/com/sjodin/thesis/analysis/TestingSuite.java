@@ -1,8 +1,10 @@
 package com.sjodin.thesis.analysis;
 
-import com.sjodin.thesis.optimisation.GradientDescent;
-import com.sjodin.thesis.optimisation.GradientDescentWithAnnealing;
-import com.sjodin.thesis.statements.ProgramTracker;
+import com.sjodin.thesis.algorithm.GradientDescent;
+import com.sjodin.thesis.algorithm.GradientDescentWithAnnealing;
+import com.sjodin.thesis.algorithm.variants.VariantInnerPrecision;
+import com.sjodin.thesis.algorithm.variants.VariantInstantFullPrecision;
+import com.sjodin.thesis.programs.statements.ProgramTracker;
 
 import java.util.List;
 

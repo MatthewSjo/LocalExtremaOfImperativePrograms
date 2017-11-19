@@ -1,7 +1,7 @@
-package com.sjodin.thesis.analysis;
+package com.sjodin.thesis.algorithm.variants;
 
-import com.sjodin.thesis.optimisation.GradientDescentWithAnnealing;
-import com.sjodin.thesis.optimisation.GradientDescentWithSmoothing;
+import com.sjodin.thesis.algorithm.GradientDescentWithAnnealing;
+import com.sjodin.thesis.algorithm.GradientDescentWithSmoothing;
 
 // A variant without an outer loop; simply goes instantly to full precision
 public class VariantInstantFullPrecision extends GradientDescentWithAnnealing {

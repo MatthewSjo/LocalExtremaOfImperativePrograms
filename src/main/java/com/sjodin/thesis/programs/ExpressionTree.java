@@ -1,11 +1,10 @@
-package com.sjodin.thesis.expressions;
+package com.sjodin.thesis.programs;
 
-import com.sjodin.thesis.components.State;
 import com.sjodin.thesis.components.DualNumber;
 
 // Interface for expressions
 // expressions return values (DualNumbers)
 public interface ExpressionTree {
     // Evaluates an expression on a state, returning a dual number
-    DualNumber run(State<DualNumber> state);
+    DualNumber run(ImperativeProgramState<DualNumber> state);
 }

@@ -1,7 +1,8 @@
-package com.sjodin.thesis.optimisation;
+package com.sjodin.thesis.algorithm.variants;
 
-import com.sjodin.thesis.components.State;
-import com.sjodin.thesis.statements.StatementTree;
+import com.sjodin.thesis.programs.ImperativeProgramState;
+import com.sjodin.thesis.algorithm.GradientDescent;
+import com.sjodin.thesis.programs.StatementTree;
 import com.sjodin.thesis.components.DualNumber;
 
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class GradientDescentBasic implements GradientDescent<Double[]> {
             // have to update for each parameter
             for (int i = 0; i < parameters; i++) {
                 // state is all the parameters we have at this point, with this one as the one we differentiate
-                State<DualNumber> state = new State<DualNumber>();
+                ImperativeProgramState<DualNumber> state = new ImperativeProgramState<DualNumber>();
                 for (int j = 0; j < parameters; j++) {
                     state.put(j, new DualNumber(oldVector[j], 0.0));
                 }
@@ -82,7 +83,7 @@ public class GradientDescentBasic implements GradientDescent<Double[]> {
             // have to update for each parameter
             for (int i = 0; i < parameters; i++) {
                 // state is all the parameters we have at this point, with this one as the one we differentiate
-                State<DualNumber> state = new State<DualNumber>();
+                ImperativeProgramState<DualNumber> state = new ImperativeProgramState<DualNumber>();
                 for (int j = 0; j < parameters; j++) {
                     state.put(j, new DualNumber(oldVector[j], 0.0));
                 }

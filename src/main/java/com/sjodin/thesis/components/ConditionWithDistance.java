@@ -1,6 +1,7 @@
 package com.sjodin.thesis.components;
 
-import com.sjodin.thesis.expressions.ExpressionTree;
+import com.sjodin.thesis.programs.ExpressionTree;
+import com.sjodin.thesis.programs.ImperativeProgramState;
 
 // Stores the idea of a condition of various kinds.
 // Returns not just the result, but how close it was to the other result.
@@ -51,7 +52,7 @@ public class ConditionWithDistance {
     }
 
     // return whether the condition returns true or false, as well as how close to the boundary the result was
-    public ConditionResult run(State<DualNumber> state) {
+    public ConditionResult run(ImperativeProgramState<DualNumber> state) {
         DualNumber firstValue = firstExpression.run(state);
         DualNumber secondValue = secondExpression.run(state);
         double point = firstValue.getValue() - secondValue.getValue();

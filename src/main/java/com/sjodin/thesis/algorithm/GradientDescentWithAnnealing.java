@@ -1,24 +1,23 @@
-package com.sjodin.thesis.analysis;
+package com.sjodin.thesis.algorithm;
 
 import com.sjodin.thesis.components.BranchValues;
-import com.sjodin.thesis.optimisation.GradientDescent;
-import com.sjodin.thesis.optimisation.GradientDescentWithSmoothing;
-import com.sjodin.thesis.statements.StatementTree;
+import com.sjodin.thesis.programs.StatementTree;
 
-// a variant that calculates inner precision differently (in findOptimal)
-public class VariantInnerPrecision implements GradientDescent<Double[]> {
+// our actual implementation of the algorithm
+public class GradientDescentWithAnnealing implements GradientDescent<Double[]> {
 
-    private static final double EXP_CONSTANT = -Math.log(0.5);
+    protected static final double EXP_CONSTANT = -Math.log(0.5);
 
-    private StatementTree program;
-    private int parameters;
-    private double gamma;
-    private Double[] startPoint;
     private double range;
     private double coolingSpeed;
 
+    protected double gamma;
+    protected Double[] startPoint;
+    protected StatementTree program;
+    protected int parameters;
+
     // "gamma" is our step size
-    public VariantInnerPrecision(double gamma, double range, double coolingSpeed) {
+    public GradientDescentWithAnnealing(double gamma, double range, double coolingSpeed) {
         this.gamma = gamma;
         this.range = range;
         this.coolingSpeed = coolingSpeed;
@@ -41,7 +40,8 @@ public class VariantInnerPrecision implements GradientDescent<Double[]> {
         return findOptimal(precision, true);
     }
 
-    private Double smoother(BranchValues branchValues, double expAdjust, double smoothingRange) {
+    // the method by which we smooth boundary conditions
+    protected Double smoother(BranchValues branchValues, double expAdjust, double smoothingRange) {
         if (branchValues.weighting < 0) {
             return branchValues.falseGradient + ((branchValues.trueGradient - (expAdjust * branchValues.trueResult)
                     - branchValues.falseGradient + (expAdjust * branchValues.falseResult)) * Math.exp(-expAdjust * (smoothingRange - Math.abs(branchValues.weighting))));
@@ -51,7 +51,8 @@ public class VariantInnerPrecision implements GradientDescent<Double[]> {
         }
     }
 
-    private Double equalitySmoother(BranchValues branchValues, double smoothingRange) {
+    // the method by which we smooth equality conditions
+    protected Double equalitySmoother(BranchValues branchValues, double smoothingRange) {
         double dist = Math.abs(branchValues.weighting);
         double first = dist * dist * branchValues.falseGradient;
         double second = 2 * dist * branchValues.falseResult;
@@ -61,26 +62,28 @@ public class VariantInnerPrecision implements GradientDescent<Double[]> {
         return (first + second + third - fourth - fifth)/(smoothingRange * smoothingRange);
     }
 
-    private Double[] findOptimal(double precision, boolean maximise) {
+    // finds maximum or minimum (parametrised by "maximise")
+    protected Double[] findOptimal(double precision, boolean maximise) {
         Double[] parameterVector = startPoint;
         double T = range;
         GradientDescentWithSmoothing innerDescent = new GradientDescentWithSmoothing(program, parameters);
         boolean done = false;
         while (!done) {
-            optimiseAtOnePrecisionLevel(T, innerDescent, precision, maximise, parameterVector);
+            parameterVector = optimiseAtOnePrecisionLevel(T, innerDescent, precision, maximise, parameterVector);
 
             done = temperatureLowEnoughToFinish(T, precision);
 
+            // next iteration will have smaller ranges of interpolation
             T = T*coolingSpeed;
         }
         return parameterVector;
     }
 
-    private Double[] optimiseAtOnePrecisionLevel(double T, GradientDescentWithSmoothing innerDescent,
+    protected Double[] optimiseAtOnePrecisionLevel(double T, GradientDescentWithSmoothing innerDescent,
                                                  double precision, boolean maximise, Double[] parameterVector) {
         // the actual difference to normal
         double expAdjust = EXP_CONSTANT/T;
-        double effectiveGamma = gamma*T;
+        double effectiveGamma = gamma/expAdjust;
         final double smoothingRange = T;
         if (maximise) {
             return innerDescent.findMaximum(effectiveGamma*precision, effectiveGamma,

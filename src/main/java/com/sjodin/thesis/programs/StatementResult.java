@@ -1,11 +1,13 @@
-package com.sjodin.thesis.components;
+package com.sjodin.thesis.programs;
+
+import com.sjodin.thesis.components.DualNumber;
 
 public class StatementResult {
 
     private DualNumber resultValue;
-    private State<DualNumber> resultingState;
+    private ImperativeProgramState<DualNumber> resultingState;
 
-    public StatementResult(DualNumber resultValue, State<DualNumber> resultingState) {
+    public StatementResult(DualNumber resultValue, ImperativeProgramState<DualNumber> resultingState) {
         this.resultValue = resultValue;
         this.resultingState = resultingState;
     }
@@ -18,7 +20,7 @@ public class StatementResult {
         return resultValue;
     }
 
-    public State<DualNumber> getResultingState() {
+    public ImperativeProgramState<DualNumber> getResultingState() {
         return resultingState;
     }
 }

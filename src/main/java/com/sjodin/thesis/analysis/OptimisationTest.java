@@ -1,6 +1,6 @@
 package com.sjodin.thesis.analysis;
 
-import com.sjodin.thesis.statements.StatementTree;
+import com.sjodin.thesis.programs.StatementTree;
 
 // immutable POJO for storing all of the information about a test (more than just the program itself)
 public class OptimisationTest {
@@ -21,10 +21,6 @@ public class OptimisationTest {
         this.isMaximisation = isMaximisation;
         this.expectedAnswer = expectedAnswer;
         this.statementTree = statementTree;
-    }
-
-    public String getTestName() {
-        return testName;
     }
 
     public boolean isMaximisation() {
