@@ -56,7 +56,6 @@ public class IfStatement implements StatementTree {
             } else {
                 return spliceBranchesOfBoundaryConditionIfStatement(smoother, displacementFromBranchPoint, takenBranch, notTakenBranch);
             }
-        // if not in smoothing range - no interpolation
         } else {
             return outOfSmoothingRangeSoNoInterpolation(smoother, equalitySmoother, smoothingRange, takenBranch);
         }
