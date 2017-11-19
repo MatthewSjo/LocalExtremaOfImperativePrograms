@@ -3,9 +3,7 @@ package com.sjodin.thesis.analysis;
 import com.sjodin.thesis.optimisation.GradientDescent;
 import com.sjodin.thesis.optimisation.GradientDescentWithAnnealing;
 import com.sjodin.thesis.statements.ProgramTracker;
-import com.sjodin.thesis.components.Tuple2;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // provides a number of statically invoked tests (class essentially static)
@@ -72,7 +70,7 @@ public final class TestingSuite {
     private static void advancedTest(List<OptimisationTest> programsToTest, GradientDescent<Double[]> algorithmVariant,
                                     double precision, double startingPoint) {
         int totalRuns = 0;
-        List<Tuple2<String, Double[]>> failures = new ArrayList<>();
+        int failures = 0;
         for (OptimisationTest test : programsToTest) {
             ProgramTracker tracker = new ProgramTracker(test.getStatementTree());
             Double[] startingValues = new Double[test.getExpectedAnswer().length];
@@ -89,7 +87,7 @@ public final class TestingSuite {
             for (int i = 0; i < results.length; i++) {
                 assert Math.abs(results[i] - test.getExpectedAnswer()[i]) < precision;
                 if (Math.abs(results[i] - test.getExpectedAnswer()[i]) >= precision) {
-                    failures.add(new Tuple2<>(test.getTestName(), results));
+                    failures++;
                 }
             }
 
@@ -97,6 +95,6 @@ public final class TestingSuite {
         }
 
         System.out.println("Average runs:  " + (totalRuns/programsToTest.size()));
-        System.out.println("Failures:  " + failures.size());
+        System.out.println("Failures:  " + failures);
     }
 }

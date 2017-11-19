@@ -61,7 +61,7 @@ public class GradientDescentBasic implements GradientDescent<Double[]> {
                 }
                 state.put(i, new DualNumber(oldVector[i], 1.0));
                 // now perform the actual change for this parameter
-                newVector[i] = oldVector[i] - (gamma * program.run(state, (x -> 1.0), (x -> 1.0), 0.0).first.get().getEpsilonCoefficient());
+                newVector[i] = oldVector[i] - (gamma * program.run(state, (x -> 1.0), (x -> 1.0), 0.0).getResultValue().getEpsilonCoefficient());
             }
         }
         return newVector;
@@ -88,7 +88,7 @@ public class GradientDescentBasic implements GradientDescent<Double[]> {
                 }
                 state.put(i, new DualNumber(oldVector[i], 1.0));
                 // now perform the actual change for this parameter
-                newVector[i] = oldVector[i] + (gamma * program.run(state, (x -> 1.0), (x -> 1.0), 0.0).first.get().getEpsilonCoefficient());
+                newVector[i] = oldVector[i] + (gamma * program.run(state, (x -> 1.0), (x -> 1.0), 0.0).getResultValue().getEpsilonCoefficient());
             }
         }
         return newVector;

@@ -95,7 +95,7 @@ public class GradientDescentWithSmoothing {
 
     private double calculateChangeForParameter(double effectiveGamma, State<DualNumber> state, Function<BranchValues, Double> smoother,
                                                Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
-        double change = (effectiveGamma * program.run(state, smoother, equalitySmoother, smoothingRange).first.get().getEpsilonCoefficient());
+        double change = (effectiveGamma * program.run(state, smoother, equalitySmoother, smoothingRange).getResultValue().getEpsilonCoefficient());
 
         // Interpolation leads to very high gradients over tiny ranges, so limit jumps
         if (change > 0) {

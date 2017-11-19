@@ -51,17 +51,17 @@ public class ConditionWithDistance {
     }
 
     // return whether the condition returns true or false, as well as how close to the boundary the result was
-    public Tuple2<Boolean, Double> run(State<DualNumber> state) {
+    public ConditionResult run(State<DualNumber> state) {
         DualNumber firstValue = firstExpression.run(state);
         DualNumber secondValue = secondExpression.run(state);
         double point = firstValue.getValue() - secondValue.getValue();
         switch (type) {
-            case EQ: return new Tuple2<>(point == 0, point);
-            case GT: return new Tuple2<>(point > 0, point);
-            case LT: return new Tuple2<>(point < 0, point);
-            case GTE: return new Tuple2<>(point >= 0, point);
-            case LTE: return new Tuple2<>(point <= 0, point);
-            default:  return new Tuple2<>(true, 0.0);
+            case EQ: return new ConditionResult(point == 0, point);
+            case GT: return new ConditionResult(point > 0, point);
+            case LT: return new ConditionResult(point < 0, point);
+            case GTE: return new ConditionResult(point >= 0, point);
+            case LTE: return new ConditionResult(point <= 0, point);
+            default:  return new ConditionResult(true, 0.0);
         }
     }
 }

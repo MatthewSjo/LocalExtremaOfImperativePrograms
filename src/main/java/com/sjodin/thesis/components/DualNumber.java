@@ -6,7 +6,7 @@ public class DualNumber {
     private double value;
     private double epsilonCoefficient;
 
-    public DualNumber(Double value, Double epsilonCoefficient) {
+    public DualNumber(double value, double epsilonCoefficient) {
         this.value = value;
         this.epsilonCoefficient = epsilonCoefficient;
     }
@@ -20,7 +20,7 @@ public class DualNumber {
     }
 
     public DualNumber spliceCoefficients(DualNumber n, double proportion) {
-        return new DualNumber(value, (proportion*epsilonCoefficient) + ((1-proportion)*n.getEpsilonCoefficient()));
+        return new DualNumber(value, (proportion*epsilonCoefficient) + ((1-proportion)*n.epsilonCoefficient));
     }
 
     @Override
@@ -28,28 +28,19 @@ public class DualNumber {
         return "Dual Number:  " + value + " + " + epsilonCoefficient + "epsilon";
     }
 
-    public void set(Tuple2<Double, Double> value) {
-        this.value = value.first;
-        this.epsilonCoefficient = value.second;
-    }
-
-    public Tuple2<Double, Double> get() {
-        return new Tuple2<Double, Double>(value, epsilonCoefficient);
-    }
-
     public DualNumber add(DualNumber n) {
-        return new DualNumber(value + n.get().first, epsilonCoefficient + n.get().second);
+        return new DualNumber(value + n.value, epsilonCoefficient + n.epsilonCoefficient);
     }
 
     public DualNumber subtract(DualNumber n) {
-        return new DualNumber(value - n.get().first, epsilonCoefficient - n.get().second);
+        return new DualNumber(value - n.value, epsilonCoefficient - n.epsilonCoefficient);
     }
 
     public DualNumber multiply(DualNumber n) {
-        return new DualNumber(value * n.get().first, (value * n.get().second) + (epsilonCoefficient * n.get().first));
+        return new DualNumber(value * n.value, (value * n.epsilonCoefficient) + (epsilonCoefficient * n.value));
     }
 
     public DualNumber divide(DualNumber n) {
-        return multiply(new DualNumber((1/n.get().first), (1/n.get().second)));
+        return multiply(new DualNumber((1/n.value), (1/n.epsilonCoefficient)));
     }
 }

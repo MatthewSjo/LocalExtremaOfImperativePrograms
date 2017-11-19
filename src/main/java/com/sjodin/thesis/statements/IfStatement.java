@@ -1,13 +1,8 @@
 package com.sjodin.thesis.statements;
 
-import com.sjodin.thesis.components.BranchValues;
-import com.sjodin.thesis.components.ConditionWithDistance;
-import com.sjodin.thesis.components.State;
-import com.sjodin.thesis.components.Tuple2;
-import com.sjodin.thesis.components.DualNumber;
+import com.sjodin.thesis.components.*;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 // represents an if statement with a condition, two branches and what comes after the branches (rest of the program)
@@ -40,29 +35,29 @@ public class IfStatement implements StatementTree {
     }
 
     @Override
-    public Tuple2<Optional<DualNumber>, State<DualNumber>> run(State<DualNumber> state, Function<BranchValues, Double> smoother,
+    public StatementResult run(State<DualNumber> state, Function<BranchValues, Double> smoother,
                                                                Function<BranchValues, Double> equalitySmoother, Double smoothingRange) {
         // first find which branch was taken, and find results of branch taken or not
-        Tuple2<Boolean, Double> conditionResults = condition.run(state);
-        boolean takeTrueBranch = conditionResults.first;
-        double point = conditionResults.second;
+        ConditionResult conditionResults = condition.run(state);
+        boolean takeTrueBranch = conditionResults.isConditionPassed();
+        double displacementFromBranchPoint = conditionResults.getHowCloseToPassing();
         State<DualNumber> takenState = state.copy();
         State<DualNumber> notTakenState = state.copy();
-        Tuple2<Optional<DualNumber>, State<DualNumber>> takenBranch =
+        StatementResult takenBranch =
                 takeTrueBranch ? trueBranch.run(takenState, smoother, equalitySmoother, smoothingRange)
                         : falseBranch.run(takenState, smoother, equalitySmoother, smoothingRange);
-        Tuple2<Optional<DualNumber>, State<DualNumber>> notTakenBranch =
+        StatementResult notTakenBranch =
                 takeTrueBranch ? falseBranch.run(notTakenState, smoother, equalitySmoother, smoothingRange)
                         : trueBranch.run(notTakenState, smoother, equalitySmoother, smoothingRange);
 
         // interpolate if within the smoothing range of this iteration
-        if (Math.abs(point) <= smoothingRange) {
+        if (Math.abs(displacementFromBranchPoint) <= smoothingRange) {
             // if any of the branches don't themselves return, run the rest of the program with them
-            if (!takenBranch.first.isPresent()) {
-                takenBranch = nextStatement.run(takenBranch.second, smoother, equalitySmoother, smoothingRange);
+            if (!takenBranch.hasResultValue()) {
+                takenBranch = nextStatement.run(takenBranch.getResultingState(), smoother, equalitySmoother, smoothingRange);
             }
-            if (!notTakenBranch.first.isPresent()) {
-                notTakenBranch = nextStatement.run(notTakenBranch.second, smoother, equalitySmoother, smoothingRange);
+            if (!notTakenBranch.hasResultValue()) {
+                notTakenBranch = nextStatement.run(notTakenBranch.getResultingState(), smoother, equalitySmoother, smoothingRange);
             }
             // Separate case for equality test, as need to smooth very differently
             if (condition.isEqualityTest()) {
@@ -70,30 +65,30 @@ public class IfStatement implements StatementTree {
                 if (takeTrueBranch) {
                     return takenBranch;
                 } else {
-                    double proportion = Math.pow(1.0 - (Math.abs(point) / ((double) smoothingRange)), 2);
-                    double splicedGradient = equalitySmoother.apply(new BranchValues(point, takenBranch.first.get().getValue(), takenBranch.first.get().getEpsilonCoefficient(),
-                            notTakenBranch.first.get().getValue(), notTakenBranch.first.get().getEpsilonCoefficient()));
-                    return new Tuple2<Optional<DualNumber>, State<DualNumber>>(
-                            Optional.of(new DualNumber(takenBranch.first.get().getValue(), splicedGradient)),
-                            spliceStatesWithSmoothing(takenBranch.second, notTakenBranch.second, proportion));
+                    double proportion = Math.pow(1.0 - (Math.abs(displacementFromBranchPoint) / ((double) smoothingRange)), 2);
+                    double splicedGradient = equalitySmoother.apply(new BranchValues(displacementFromBranchPoint, takenBranch.getResultValue().getValue(), takenBranch.getResultValue().getEpsilonCoefficient(),
+                            notTakenBranch.getResultValue().getValue(), notTakenBranch.getResultValue().getEpsilonCoefficient()));
+                    return new StatementResult(
+                            new DualNumber(takenBranch.getResultValue().getValue(), splicedGradient),
+                            spliceStatesWithSmoothing(takenBranch.getResultingState(), notTakenBranch.getResultingState(), proportion));
                 }
             // boundary case, not equality case
             } else {
                 // splice values each return
-                double splicedGradient = smoother.apply(new BranchValues(point, takenBranch.first.get().getValue(), takenBranch.first.get().getEpsilonCoefficient(),
-                        notTakenBranch.first.get().getValue(), notTakenBranch.first.get().getEpsilonCoefficient()));
-                return new Tuple2<Optional<DualNumber>, State<DualNumber>>(
-                        Optional.of(new DualNumber(takenBranch.first.get().getValue(), splicedGradient)),
-                        spliceStatesWithSmoothing(takenBranch.second, notTakenBranch.second, 1.0));
+                double splicedGradient = smoother.apply(new BranchValues(displacementFromBranchPoint, takenBranch.getResultValue().getValue(), takenBranch.getResultValue().getEpsilonCoefficient(),
+                        notTakenBranch.getResultValue().getValue(), notTakenBranch.getResultValue().getEpsilonCoefficient()));
+                return new StatementResult(
+                        new DualNumber(takenBranch.getResultValue().getValue(), splicedGradient),
+                        spliceStatesWithSmoothing(takenBranch.getResultingState(), notTakenBranch.getResultingState(), 1.0));
             }
         // if not in smoothing range - no interpolation
         } else {
-            if (takenBranch.first.isPresent()) {
+            if (takenBranch.hasResultValue()) {
                 // if this branch returns, return
                 return takenBranch;
             } else {
                 // if not returning from this branch, update state and move on
-                return nextStatement.run(takenBranch.second, smoother, equalitySmoother, smoothingRange);
+                return nextStatement.run(takenBranch.getResultingState(), smoother, equalitySmoother, smoothingRange);
             }
         }
 
