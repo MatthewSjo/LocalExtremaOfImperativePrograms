@@ -2,7 +2,7 @@ package com.sjodin.thesis.components;
 
 // for storing what comes out of 2 branches for the purposes of splicing (immutable POJO)
 public class BranchValues {
-    public final double point;
+    public final double weighting;
     public final double trueResult;
     public final double trueGradient;
     public final double falseResult;
@@ -10,12 +10,12 @@ public class BranchValues {
 
     @Override
     public String toString() {
-        return "BranchValues:  (point:  " + point + ", trueResult:  " + trueResult + ", trueGradient:  " + trueGradient
+        return "BranchValues:  (weighting:  " + weighting + ", trueResult:  " + trueResult + ", trueGradient:  " + trueGradient
                 + ", falseResult:  " + falseResult + ", falseGradient:   " + falseGradient + ")";
     }
 
-    public BranchValues (double point, double trueResult, double trueGradient, double falseResult, double falseGradient) {
-        this.point = point;
+    public BranchValues (double weighting, double trueResult, double trueGradient, double falseResult, double falseGradient) {
+        this.weighting = weighting;
         this.trueResult = trueResult;
         this.trueGradient = trueGradient;
         this.falseResult = falseResult;
