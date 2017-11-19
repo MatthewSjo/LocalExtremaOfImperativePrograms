@@ -4,6 +4,12 @@
 
 Features code that implements and tests an algorithm for finding local extrema of imperative programs.
 
-Main.java contains some sample tests.
+Masters thesis of Matthew Sjödin for Computer Science at Oxford, 2016.
 
-Github repository created using intellij Github plugin using default settings.
+Main.java contains some examples of how to use the algorithm, which times how fast it is in reality.
+
+Masters thesis itself containing the algorithm implemented is in the top level of the repository.
+
+To open in IntelliJ, clone the repository and run `./gradlew idea` in the top level to generate the IntelliJ project, then open the `.ipr` file generated.
+
+Tests are written in Spock, and are probably more interesting to look at that the (similar) analysis done in Main.java.
