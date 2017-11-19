@@ -7,12 +7,12 @@ import java.util.Set;
 // The state of the program - the values of variables.  Indexed via integers
 public class ImperativeProgramState<T> {
 
+    private Map<Integer,T> valueMap = new HashMap<Integer, T>();
+
     @Override
     public String toString() {
         return valueMap.toString();
     }
-
-    private Map<Integer,T> valueMap = new HashMap<Integer, T>();
 
     public boolean contains(int index) {
         return valueMap.containsKey(index);
